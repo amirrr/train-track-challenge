@@ -1,12 +1,17 @@
 # Train Track Flask API
 
-This file contains the Flask API for the Train Track project. The API allows users to check for conflicts in train routes and visualize them. It checks for conflicts under the assumption that trains can travel in both directions on a track at the same time. This means that in the figure below, if a train is traveling from A to B, another train can travel from B to A at the same time on the longer path.
+This repository contains the Flask API for the Train Track project. The API allows users to check for conflicts in train routes and visualize them. It checks for conflicts under the assumption that trains can travel in both directions on a track at the same time. This means that in the figure below, if a train is traveling from A to B, another train can travel from B to A at the same time on the longer path.
 
 ```text
 A - B
 |   |
 C - D
 ```
+
+<p align="center">
+  <img src="https://github.com/amirrr/train-track-challenge/blob/main/static/result.png?raw=true" width="350" title="result page">
+</p>
+
 
 ## Prerequisites
 
