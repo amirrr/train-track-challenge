@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Check Train Track</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+      <h1 class="text-2xl mb-4 text-center">Input JSON</h1>
+
+      <!-- File Upload Form -->
+      <form method="POST" action="/upload_json" enctype="multipart/form-data">
+        <input
+          type="file"
+          name="json_file"
+          class="mb-4 p-2 rounded-lg w-full"
+          required
+        />
+        <button
+          type="submit"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full w-full"
+        >
+          Upload JSON File
+        </button>
+      </form>
+
+      <hr class="my-4" />
+
+      <!-- Copy-Paste Form -->
+      <form method="POST" action="/process_json">
+        <textarea
+            name="json_input"
+            rows="10"
+            class="mb-4 p-2 rounded-lg w-full"
+            placeholder="Paste your JSON here"
+            required
+        ></textarea>
+        <button
+          type="submit"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full w-full"
+        >
+          Process Copied JSON
+        </button>
+      </form>
+    </div>
+  </body>
+</html>

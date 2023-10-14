@@ -1,7 +1,9 @@
 import pylab as plt
 import networkx as nx
 import json
-
+import base64
+from io import BytesIO
+from matplotlib.figure import Figure
 
 class TrainTrack:
     """
@@ -24,7 +26,7 @@ class TrainTrack:
         json_string : str
             A string containing the train track data in JSON format.
         """
-        self.data = json.loads(json_string)
+        self.data = json_string
         self.G = nx.Graph()
         self._add_station_graph_edges()
         self._mark_occupied_routes()
@@ -205,4 +207,41 @@ class TrainTrack:
 
         plt.axis("off")
         plt.show()
-        
+    
+    def plot_web_graph(self):
+        """
+        Plots the train track graph.
+        """
+       
+        pos = nx.spring_layout(self.G)
+        fig = Figure(figsize=(12, 8))
+        ax = fig.subplots()
+
+        # Draw the nodes
+        nx.draw_networkx_nodes(self.G, pos, ax=ax)
+
+        # Draw edges based on your criteria (unoccupied, interested, occupied, etc.)
+        nx.draw_networkx_edges(self.G, pos, edgelist=self.get_unoccupied_edges(), edge_color="black", width=2, style="dashed", ax=ax)
+        nx.draw_networkx_edges(self.G, pos, edgelist=self.get_interested_edges(), edge_color="green", width=2, ax=ax)
+        nx.draw_networkx_edges(self.G, pos, edgelist=self.get_occupied_edges(), edge_color="orange", width=2, ax=ax)
+        nx.draw_networkx_edges(self.G, pos, edgelist=[ edge for edge in self.get_interested_edges() if edge in self.get_occupied_edges()],
+            edge_color="red",
+            width=2,
+            ax=ax
+        )
+
+        # Draw the labels
+        labels = {node: node for node in self.G.nodes()}
+        nx.draw_networkx_labels(self.G, pos, labels, ax=ax)
+
+
+        # Save the figure to a temporary buffer and convert it to base64
+        buf = BytesIO()
+        fig.savefig(buf, format="png")
+        data = base64.b64encode(buf.getbuffer()).decode("ascii")
+
+        # Generate HTML to embed the image
+        html = f"data:image/png;base64,{data}"
+        # return f"<img src='data:image/png;base64,{data}'/>"
+
+        return html
