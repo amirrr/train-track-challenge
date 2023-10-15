@@ -71,18 +71,18 @@ class TrainTrack:
 
                     if self.G.has_edge(start_node, end_node):
                         self.G.edges[start_node, end_node]["occupied"] = True
-            else:
-                start_node = route["start"]
-                end_node = route["end"]
-                nodes_to_mark_unoccupied = nx.shortest_path(
-                    self.G, source=start_node, target=end_node
-                )
-                for i in range(len(nodes_to_mark_unoccupied) - 1):
-                    start_node = nodes_to_mark_unoccupied[i]
-                    end_node = nodes_to_mark_unoccupied[i + 1]
+            # else:
+            #     start_node = route["start"]
+            #     end_node = route["end"]
+            #     nodes_to_mark_unoccupied = nx.shortest_path(
+            #         self.G, source=start_node, target=end_node
+            #     )
+            #     for i in range(len(nodes_to_mark_unoccupied) - 1):
+            #         start_node = nodes_to_mark_unoccupied[i]
+            #         end_node = nodes_to_mark_unoccupied[i + 1]
 
-                    if self.G.has_edge(start_node, end_node):
-                        self.G.edges[start_node, end_node]["occupied"] = False
+            #         if self.G.has_edge(start_node, end_node):
+            #             self.G.edges[start_node, end_node]["occupied"] = False
 
     def _mark_interested_routes(self):
         """
@@ -147,7 +147,7 @@ class TrainTrack:
         return [
             (edge[0], edge[1])
             for edge in self.G.edges(data=True)
-            if edge[2]["occupied"]
+            if "occupied" in edge[2]
         ]
 
     def get_unoccupied_edges(self):
@@ -162,7 +162,7 @@ class TrainTrack:
         return [
             (edge[0], edge[1])
             for edge in self.G.edges(data=True)
-            if not edge[2]["occupied"]
+            if "occupied" not in edge[2]
         ]
 
     def get_interested_edges(self):
