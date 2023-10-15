@@ -18,21 +18,35 @@ class TrainTrack:
         A graph representing the train track.
     """
 
-    def __init__(self, json_string):
+    def __init__(self, json_object):
         """
         Initializes a TrainTrack object.
 
         Parameters:
         -----------
-        json_string : str
-            A string containing the train track data in JSON format.
+        json_object : dict
+            A dictionary containing the train track data in JSON format.
         """
-        self.data = json_string
-        self.G = nx.Graph()
-        self._add_station_graph_edges()
-        self._mark_occupied_routes()
-        self._mark_interested_routes()
+        if self.is_valid_input(json_object):
+            self.data = json_object
+            self.G = nx.Graph()
+            self._add_station_graph_edges()
+            self._mark_occupied_routes()
+            self._mark_interested_routes()
+        else:
+            raise ValueError("Invalid JSON input format.")
 
+    @staticmethod
+    def is_valid_input(json_data):
+        try:
+            # data = json.loads(json_data)
+            if all(key in json_data for key in ["station_graph", "routes", "check_route"]):
+                return True
+            else:
+                return False
+        except json.JSONDecodeError:
+            return False
+        
     def _add_station_graph_edges(self):
         """
         Adds edges to the train track graph based on the station graph data.

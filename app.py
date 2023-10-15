@@ -23,8 +23,8 @@ def index():
 
 @app.route("/check_conflicts", methods=["POST"])
 def check_possible_to_travel():
-    json_string = request.get_json()
     try:
+        json_string = request.get_json()
         train_track = TrainTrack(json_string)
         if train_track.is_it_possible_to_travle():
             return jsonify({"success": True})
@@ -32,7 +32,7 @@ def check_possible_to_travel():
             return jsonify({"success": False})
     except Exception as e:
         traceback.print_exc()
-        return jsonify({"status": "error", "message": str(e)})
+        return jsonify({"status": "Error", "message": str(e)})
 
 
 @app.route("/upload_json", methods=["POST"])
@@ -121,4 +121,3 @@ def test_plot():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
