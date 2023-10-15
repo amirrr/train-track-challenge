@@ -41,7 +41,7 @@ def upload_json():
         json_file = request.files["json_file"]
         # Process the uploaded JSON file here
 
-        # Example: Read the contents of the file
+        # Read the contents of the file
         file_contents = json_file.read()
         t = TrainTrack(json.loads(file_contents))
         pic_url = t.plot_web_graph()
@@ -63,9 +63,8 @@ def process_json():
     """
     if "json_input" in request.form:
         json_data = request.form["json_input"]
-
         try:
-            # You can parse and process the JSON data here
+            
             parsed_data = json.loads(json_data)
             t = TrainTrack(parsed_data)
             pic_url = t.plot_web_graph()
