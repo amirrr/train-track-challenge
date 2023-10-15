@@ -5,6 +5,7 @@ import base64
 from io import BytesIO
 from matplotlib.figure import Figure
 
+
 class TrainTrack:
     """
     A class representing a train track.
@@ -56,16 +57,52 @@ class TrainTrack:
 
                     if self.G.has_edge(start_node, end_node):
                         self.G.edges[start_node, end_node]["occupied"] = True
+            else:
+                start_node = route["start"]
+                end_node = route["end"]
+                nodes_to_mark_unoccupied = nx.shortest_path(
+                    self.G, source=start_node, target=end_node
+                )
+                for i in range(len(nodes_to_mark_unoccupied) - 1):
+                    start_node = nodes_to_mark_unoccupied[i]
+                    end_node = nodes_to_mark_unoccupied[i + 1]
+
+                    if self.G.has_edge(start_node, end_node):
+                        self.G.edges[start_node, end_node]["occupied"] = False
 
     def _mark_interested_routes(self):
         """
         Marks the routes that are of interest in the train track graph.
         """
+
         nodes_to_be_traversed = nx.shortest_path(
             self.G,
             source=self.data["check_route"]["start"],
             target=self.data["check_route"]["end"],
         )
+
+        all_paths = list(
+            nx.all_simple_paths(
+                self.G,
+                source=self.data["check_route"]["start"],
+                target=self.data["check_route"]["end"],
+            )
+        )
+        all_paths.sort(key=len)
+
+        for path in all_paths:
+            is_occupied = False
+            for i in range(len(path) - 1):
+                start_node = path[i]
+                end_node = path[i + 1]
+                if self.G[start_node][end_node]["occupied"]:
+                    is_occupied = True
+                    break
+            if not is_occupied:
+                # print(path)
+                nodes_to_be_traversed = path
+                break
+
         for i in range(len(nodes_to_be_traversed) - 1):
             start_node = nodes_to_be_traversed[i]
             end_node = nodes_to_be_traversed[i + 1]
@@ -96,7 +133,7 @@ class TrainTrack:
         return [
             (edge[0], edge[1])
             for edge in self.G.edges(data=True)
-            if "occupied" in edge[2]
+            if edge[2]["occupied"]
         ]
 
     def get_unoccupied_edges(self):
@@ -111,7 +148,7 @@ class TrainTrack:
         return [
             (edge[0], edge[1])
             for edge in self.G.edges(data=True)
-            if "occupied" not in edge[2]
+            if not edge[2]["occupied"]
         ]
 
     def get_interested_edges(self):
@@ -207,12 +244,12 @@ class TrainTrack:
 
         plt.axis("off")
         plt.show()
-    
+
     def plot_web_graph(self):
         """
         Plots the train track graph.
         """
-       
+
         pos = nx.spring_layout(self.G)
         fig = Figure(figsize=(12, 8))
         ax = fig.subplots()
@@ -221,19 +258,47 @@ class TrainTrack:
         nx.draw_networkx_nodes(self.G, pos, ax=ax)
 
         # Draw edges based on your criteria (unoccupied, interested, occupied, etc.)
-        nx.draw_networkx_edges(self.G, pos, edgelist=self.get_unoccupied_edges(), edge_color="black", width=2, style="dashed", ax=ax)
-        nx.draw_networkx_edges(self.G, pos, edgelist=self.get_interested_edges(), edge_color="green", width=2, ax=ax)
-        nx.draw_networkx_edges(self.G, pos, edgelist=self.get_occupied_edges(), edge_color="orange", width=2, ax=ax)
-        nx.draw_networkx_edges(self.G, pos, edgelist=[ edge for edge in self.get_interested_edges() if edge in self.get_occupied_edges()],
+        nx.draw_networkx_edges(
+            self.G,
+            pos,
+            edgelist=self.get_unoccupied_edges(),
+            edge_color="black",
+            width=2,
+            style="dashed",
+            ax=ax,
+        )
+        nx.draw_networkx_edges(
+            self.G,
+            pos,
+            edgelist=self.get_interested_edges(),
+            edge_color="green",
+            width=2,
+            ax=ax,
+        )
+        nx.draw_networkx_edges(
+            self.G,
+            pos,
+            edgelist=self.get_occupied_edges(),
+            edge_color="orange",
+            width=2,
+            ax=ax,
+        )
+        nx.draw_networkx_edges(
+            self.G,
+            pos,
+            edgelist=[
+                edge
+                for edge in self.get_interested_edges()
+                if edge in self.get_occupied_edges()
+            ],
             edge_color="red",
             width=2,
-            ax=ax
+            ax=ax,
         )
 
         # Draw the labels
         labels = {node: node for node in self.G.nodes()}
         nx.draw_networkx_labels(self.G, pos, labels, ax=ax)
-
 
         # Save the figure to a temporary buffer and convert it to base64
         buf = BytesIO()
