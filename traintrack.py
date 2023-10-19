@@ -109,7 +109,7 @@ class TrainTrack:
             for i in range(len(path) - 1):
                 start_node = path[i]
                 end_node = path[i + 1]
-                if self.G[start_node][end_node]["occupied"]:
+                if "occupied" in self.G[start_node][end_node]:
                     is_occupied = True
                     break
             if not is_occupied:
